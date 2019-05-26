@@ -5,7 +5,6 @@ Request::Request(String method, String path) {
     this->path = path;
 
     this->setHeader();
-    this->setBody();
 }
 
 void Request::setHeader()
@@ -17,6 +16,7 @@ void Request::setHeader()
 }
 
 void Request::sendRequest(WiFiClient client) {
+    this->setBody();
     client.print(this->header);
     client.println();
     client.print(this->body);
@@ -43,9 +43,9 @@ void Request::readResponse(WiFiClient client)
 void Request::parseResponseCode() {
     char *token;
     char currentChar;
-    char firstLine[this->responseHeaders.length];
+    char firstLine[this->responseHeaders.length()];
 
-    for(int i=0; i < this->responseHeaders.length; i++)
+    for(int i=0; i < this->responseHeaders.length(); i++)
     {
         currentChar = this->responseHeaders[i];
         firstLine[i] = currentChar;
@@ -55,9 +55,6 @@ void Request::parseResponseCode() {
     token = strtok(NULL, " ");
 
     this->statusCode = atoi(token);
-    if(errno == EINVAL || errno == E2BIG || errno == EDOM || errno == ERANGE) {
-        this->statusCode = 500;
-    }
 }
 
 int Request::getStatusCode(){
@@ -65,6 +62,5 @@ int Request::getStatusCode(){
 }
 
 String Request::getResponseBody(){
-    return this.responseBody;
+    return this->responseBody;
 }
-

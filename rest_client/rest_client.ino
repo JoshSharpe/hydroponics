@@ -3,9 +3,20 @@
 
 #include <string>
 
+#ifndef config_h
+#define config_h
 #include "config.h"
-#include "Request.cpp"
+#endif
+
+#ifndef request_h
+#define request_h
+#include "Request.h"
+#endif
+
+#ifndef switch_request_h
+#define switch_request_h
 #include "SwitchRequest.h"
+#endif
 
 const String SwitchLogPath = "/api/plants/logs/switch";
 const String TemperatureLogPath = "/api/plants/logs/temperature";
@@ -26,10 +37,14 @@ void setup()
 
 void loop()
 {
-    if(Serial.available > 0) {
+    if(Serial.available() > 0) {
         String command = Serial.readString();
         Request *r = parseCommand(command);
         WiFiClient client = buildClient();
+        if(!client.connected()) {
+            Serial.println(500);
+            return;
+        }
         r->sendRequest(client);
         int statusCode = r->getStatusCode();
         Serial.println(statusCode);
@@ -65,9 +80,9 @@ void setupWifi()
 Request * parseCommand(String cmd) {
     char *firstCommand;
     char currentChar;
-    char charCommand[cmd.length];
+    char charCommand[cmd.length()];
 
-    for(int i=0; i < cmd.length; i++)
+    for(int i=0; i < cmd.length(); i++)
     {
         currentChar = cmd[i];
         charCommand[i] = currentChar;
@@ -106,12 +121,12 @@ WiFiClient buildClient()
 
     // Use WiFiClient class to create TCP connections
     WiFiClient client;
+    int iter = 0;
 
-    if (!client.connect(configuration.hostName, configuration.port))
+    while (!client.connect(configuration.hostName, configuration.port) && iter < 10)
     {
-        Serial.println("Error: connection failed");
         delay(5000);
-        return;
+        iter++;
     }
 
     return client;

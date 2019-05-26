@@ -1,7 +1,11 @@
 #include <WString.h>
-#include "config.h"
-#include "RequestType.h"
 #include <ESP8266WiFi.h>
+#include "RequestType.h"
+
+#ifndef config_h
+#define config_h
+#include "config.h"
+#endif
 
 class Request {
     private:
