@@ -4,21 +4,32 @@ bool pumpOn = false;
 
 const char TURN_PUMP_ON = '1';
 const char TURN_PUMP_OFF = '0';
+const char TURN_LIGHTS_ON = '2';
+const char TURN_LIGHTS_OFF = '3';
 
-const int PUMP_SWITCH_PIN = 30;
+const unsigned long NUMBER_OF_SECONDS_LIGHT = 1800;
+const unsigned long NUMBER_OF_SECONDS_PUMP = 1800;
+
+const int PUMP_SWITCH_PIN = 38;
+const int LIGHTS_SWITCH_PIN = 36;
 
 unsigned long lightTriggerTime;
+unsigned long pumpTriggerTime;
 
-bool isLightOn = false;
+bool isLightOn = true;
+bool isPumpOn = true;
 
 void setup() 
 {
   Serial.begin(9600);
   pinMode(PUMP_SWITCH_PIN, OUTPUT);
-  digitalWrite(PUMP_SWITCH_PIN, LOW);
+  pinMode(LIGHTS_SWITCH_PIN, OUTPUT);
+  digitalWrite(PUMP_SWITCH_PIN, HIGH);
+  digitalWrite(LIGHTS_SWITCH_PIN, HIGH);
   Serial.println("Starting program.");
 
   lightTriggerTime = millis();
+  pumpTriggerTime = millis();
 }
 
 void loop() 
@@ -38,26 +49,38 @@ void loop()
 //      digitalWrite(PUMP_SWITCH_PIN, LOW);
 //      break;
 //    default:
-//      Serial.println("Invalid option.");
+//      Serial.print("Invalid option. Found: ");
+//      Serial.println(currentInput);
 //      break;
 //  }
 
   unsigned long currentTime = millis();
+  unsigned long elapsedTimeForLights = currentTime - lightTriggerTime;
+  unsigned long elapsedTimeForPump = currentTime - pumpTriggerTime;
 
-  Serial.print("currentTime: ");
-  Serial.println(currentTime);
-  Serial.print("getSeconds(5): ");
-  Serial.println(getSeconds(5));
+  Serial.print("elapsedTime: ");
+  Serial.println(elapsedTimeForLights);
+  Serial.print("NUMBER_OF_SECONDS_LIGHT: ");
+  Serial.println(NUMBER_OF_SECONDS_LIGHT);
+  Serial.print("NUMBER_OF_SECONDS_LIGHT: * 1000 ");
+  Serial.println(NUMBER_OF_SECONDS_LIGHT * 1000);
+  Serial.print("getSeconds(NUMBER_OF_SECONDS_LIGHT): ");
+  Serial.println(getSeconds(NUMBER_OF_SECONDS_LIGHT));
   Serial.print("lightTriggerTime: ");
   Serial.println(lightTriggerTime);
 
-  if(currentTime > getSeconds(5) && currentTime - getSeconds(5) >= lightTriggerTime) {
-    Serial.println("Triggering light.");
+  if(elapsedTimeForLights > getSeconds(NUMBER_OF_SECONDS_LIGHT)) {
     triggerLight();
-    lightTriggerTime = currentTime;
+    lightTriggerTime = millis();
   }
-
-  newData = false;
+  
+  if(elapsedTimeForPump > getSeconds(NUMBER_OF_SECONDS_PUMP)) {
+    triggerPump();
+    pumpTriggerTime = millis();
+  }
+  
+//  newData = false;
+  delay(1000);
 }
 
 void checkInput() {
@@ -69,11 +92,20 @@ void checkInput() {
   }
 }
 
-int getSeconds(int numberOfSeconds) {
-  return numberOfSeconds * 1000;
+unsigned long getSeconds(unsigned long numberOfSeconds) {
+  return numberOfSeconds * (unsigned long)1000;
 }
 
 void triggerLight() {
   isLightOn = !isLightOn;
-  digitalWrite(PUMP_SWITCH_PIN, isLightOn);
+  Serial.print("Triggering lights to .");
+  Serial.println(isLightOn);
+  digitalWrite(LIGHTS_SWITCH_PIN, isLightOn);
+}
+
+void triggerPump() {
+  isPumpOn = !isPumpOn;
+  Serial.print("Triggering pump to .");
+  Serial.println(isPumpOn);
+  digitalWrite(PUMP_SWITCH_PIN, isPumpOn);
 }
