@@ -2,19 +2,29 @@ import gpiozero
 import switch
 import time
 
-lightsPin = gpiozero.DigitalOutputDevice(17)
-lightSwitch = switch.Switch(lightsPin, getSecondsFromMinutes(30), getSecondsFromMinutes(90))
+lightPinNumber = 23
+pumpPinNumber = 24
+lightsSecondsOn = 5
+lightsSecondsOff = 5
+pumpSecondsOn = 5
+pumpSecondsOff = 5
 
-pumpPin = gpiozero.DigitalOutputDevice(18)
-pumpSwitch = switch.Switch(pumpPin, getSecondsFromMinutes(30), getSecondsFromMinutes(90))
+def getSecondsFromMinutes(minutes):
+    return minutes * 60
 
-def mainLoop():
+def main():
+    currentTime = time.time()
+    lightsPin = gpiozero.DigitalOutputDevice(lightPinNumber)
+    lightSwitch = switch.Switch(lightsPin, lightsSecondsOn, lightsSecondsOff, currentTime)
+
+    pumpPin = gpiozero.DigitalOutputDevice(pumpPinNumber)
+    pumpSwitch = switch.Switch(pumpPin, pumpSecondsOn, pumpSecondsOff, currentTime)
+    
     while True:
         currentTime = time.time()
         lightSwitch.checkTrigger(currentTime)
         pumpSwitch.checkTrigger(currentTime)
+        time.sleep(1)
 
-
-
-def getSecondsFromMinutes(minutes):
-    return minutes * 60
+if __name__ == "__main__":
+    main()
