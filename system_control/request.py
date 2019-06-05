@@ -18,9 +18,9 @@ class Request(ABC):
     def setHeader(self):
         self.header = "User-Agent: HydroponicPi\r\nContent-Type: application/json"
 
-    def sendRequest(self, client):
+    def sendRequest(self):
         self.setBody()
-        url = config.getHostname() + self.path
+        url = config.getHostname() + ":" + config.getPort() + self.path
         r = requests.request(method=self.method, url=url, headers=self.header, json=self.body)
         self.statusCode = r.status_code
         self.responseHeaders = r.headers

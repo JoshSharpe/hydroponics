@@ -11,9 +11,9 @@ class Switch:
 
     def checkTrigger(self, currentTime):
         timeElapsed = currentTime - self.lastTriggerTime
-        print("currentTime: ", currentTime)
-        print("timeElapsed: ", timeElapsed)
-        print("self.durationOn: ", self.durationOn)
+        # print("currentTime: ", currentTime)
+        # print("timeElapsed: ", timeElapsed)
+        # print("self.durationOn: ", self.durationOn)
 
         if (self.isOn and timeElapsed > self.durationOn) \
             or (not self.isOn and timeElapsed > self.durationOff):
