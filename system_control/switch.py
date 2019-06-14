@@ -2,34 +2,32 @@ import time
 
 class Switch:
 
-    def __init__(self, pin, durationOn, durationOff, timeCreated):
+    def __init__(self, pin, timeCreated):
         self.isOn = False
         self.pin = pin
-        self.durationOn = durationOn
-        self.durationOff = durationOff
         self.lastTriggerTime = timeCreated
+        self.timeCreated = timeCreated
 
-    def checkTrigger(self, currentTime):
-        timeElapsed = currentTime - self.lastTriggerTime
-        # print("currentTime: ", currentTime)
-        # print("timeElapsed: ", timeElapsed)
-        # print("self.durationOn: ", self.durationOn)
-
-        if (self.isOn and timeElapsed > self.durationOn) \
-            or (not self.isOn and timeElapsed > self.durationOff):
-
-            self.trigger()
-            self.lastTriggerTime = currentTime
-            return True
+    def setSwitch(self, isOn):
+        if isOn:
+            self.turnOn()
+            return
         
-        # if not self.isOn and timeElapsed > self.durationOff:
-        #     self.trigger()
-        #     return True
-
-        return False
+        self.turnOff()
 
     def trigger(self):
         self.pin.toggle()
-        print("Turning pump on/off")
         self.isOn = not self.isOn
+
+    def turnOn(self):
+        self.isOn = True
+        # self.pin.on()
+        print("Turning pump on.")
+        self.lastTriggerTime = time.time()
+
+    def turnOff(self):
+        self.isOn = False
+        print("Turning pump off.")
+        # self.pin.off()
+        self.lastTriggerTime = time.time()
 

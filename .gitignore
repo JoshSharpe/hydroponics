@@ -1,5 +1,8 @@
 .vscode
-c_cpp_properties.json
-config.cpp
-__pycache__
+
 system_control/config.json
+
+venv/
+
+*.pyc
+__pycache__/
